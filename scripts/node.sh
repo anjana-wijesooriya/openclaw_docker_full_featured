@@ -16,6 +16,9 @@ ln -s /home/node/.npm-global/bin/summarize /usr/local/bin/summarize
 # ─── Homebrew ─────────────────────────────────────────────────
 NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+export HOMEBREW_NO_ENV_HINTS=1
+export HOMEBREW_NO_INSTALL_CLEANUP=1
+export HOMEBREW_NO_AUTO_UPDATE=1
 
 # Skill dependencies (Homebrew)
 brew tap steipete/tap
@@ -54,6 +57,25 @@ export PATH="$HOME/.local/bin:$PATH"
 
 # Skill dependencies (uv/Python)
 uv tool install nano-pdf                     # nano-pdf skill
+
+# ─── Cleanup caches ──────────────────────────────────────────
+# npm
+npm cache clean --force 2>/dev/null || true
+rm -rf /home/node/.npm/_cacache
+
+# Homebrew (keeps taps & installed formulae, removes downloads)
+brew cleanup --prune=all -s 2>/dev/null || true
+rm -rf "$(brew --cache)" 2>/dev/null || true
+rm -rf /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core/.git
+
+# Go (keep compiled binaries, remove build & module cache)
+go clean -cache -modcache -fuzzcache 2>/dev/null || true
+
+# uv / pip
+rm -rf /home/node/.cache/uv /home/node/.cache/pip
+
+# Temp files
+rm -rf /tmp/* /var/tmp/*
 
 # Node setup complete
 # All skill dependencies installed and labeled above

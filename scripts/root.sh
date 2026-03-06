@@ -37,6 +37,10 @@ EOF'
 # Prepare uv
 bash -c 'echo "source \"\$HOME/.local/bin/env\"" >> /home/node/.bashrc'
 
+# Clean apt cache
+apt-get clean
+rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 # Finalize permissions
 chown -R node:node /home/node
 chown node:node /home/node/.bashrc

@@ -1,4 +1,4 @@
-# openclaw_docker
+# OpenClaw Docker (Full-Featured)
 
 Openclaw Docker Image with pre-configured environment, development tools, and
 built-in skill dependencies.
@@ -10,18 +10,6 @@ built-in skill dependencies.
 ```bash
 docker build -t openclaw:custom .
 ```
-
-### Automated (GitHub Actions)
-
-A GitHub Actions workflow (`.github/workflows/build.yml`) automatically rebuilds
-the image:
-
-- **Daily** at 04:00 UTC — checks if the OpenClaw base image has a new digest
-- **On push** to `main` — always rebuilds
-- **Manual** — via `workflow_dispatch` in the Actions tab
-
-The built image is pushed to `ghcr.io/<owner>/openclaw_docker:latest`. Scheduled
-runs are skipped if the base image hasn't changed since the last build.
 
 ## Additional Configuration
 
@@ -116,9 +104,12 @@ pre-configured.
 ## Volume Persistence
 
 Tool configurations and auth tokens are lost when the container is removed.
-Mount the following paths as Docker volumes to persist them across runs.
 
-All paths are relative to the `node` home (`/home/node`).
+**Recommended:** Mount the entire `node` home directory as a single volume.
+This covers all tool configs at once and simplifies the setup.
+
+Below is a reference of the individual config paths if you prefer fine-grained
+mounts:
 
 | Path                       | Tool                   | Content                                           |
 | -------------------------- | ---------------------- | ------------------------------------------------- |
@@ -134,3 +125,10 @@ All paths are relative to the `node` home (`/home/node`).
 | `~/.wacli`                 | wacli                  | WhatsApp session store                            |
 | `~/.xurl`                  | xurl                   | X/Twitter OAuth tokens (YAML)                     |
 | `~/.summarize`             | summarize              | Config (`config.json`)                            |
+
+## License
+
+This image is based on [OpenClaw](https://github.com/openclaw/openclaw), which
+is licensed under the [MIT License](https://github.com/openclaw/openclaw/blob/main/LICENSE).
+The additional scripts and configuration in this repository are also provided
+under the MIT License.

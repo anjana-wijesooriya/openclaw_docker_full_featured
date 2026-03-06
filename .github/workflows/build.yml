@@ -5,10 +5,6 @@ on:
   schedule:
     - cron: "0 4 * * *" # 04:00 UTC every day
 
-  # Rebuild on push to main
-  push:
-    branches: [main]
-
   # Manual trigger
   workflow_dispatch:
 
