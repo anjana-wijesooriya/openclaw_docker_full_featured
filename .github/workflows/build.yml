@@ -24,6 +24,9 @@ jobs:
       packages: write
 
     steps:
+      - name: Lowercase IMAGE_NAME
+        run: echo "IMAGE_NAME=${IMAGE_NAME,,}" >> "$GITHUB_ENV"
+
       - name: Check for new base image
         id: base-check
         run: |
