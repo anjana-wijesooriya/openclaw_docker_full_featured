@@ -14,11 +14,13 @@ export PATH="/usr/local/go/bin:$GOPATH/bin:$HOME/.local/bin:$PATH"
 
 # ─── npm packages ────────────────────────────────────────────
 echo "── Installing npm packages..."
-npm i -g @steipete/summarize       # summarize skill
-npm i -g clawhub                   # clawhub skill
-npm i -g mcporter                  # mcporter skill
-npm i -g @steipete/oracle          # oracle skill
-npm i -g @xdevplatform/xurl        # xurl skill
+npm i -g \
+  @steipete/summarize \
+  clawhub \
+  mcporter \
+  @steipete/oracle \
+  @xdevplatform/xurl
+# summarize, clawhub, mcporter, oracle, xurl skills
 
 # ─── Homebrew packages ───────────────────────────────────────
 echo "── Installing Homebrew packages..."
