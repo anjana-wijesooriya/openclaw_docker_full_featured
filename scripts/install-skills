@@ -1,0 +1,77 @@
+#!/bin/bash
+set -e
+
+echo "Installing OpenClaw skill dependencies..."
+echo ""
+
+# ─── Environment setup ───────────────────────────────────────
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+export HOMEBREW_NO_ENV_HINTS=1
+export HOMEBREW_NO_INSTALL_CLEANUP=1
+export HOMEBREW_NO_AUTO_UPDATE=1
+export GOPATH="$HOME/go"
+export PATH="/usr/local/go/bin:$GOPATH/bin:$HOME/.local/bin:$PATH"
+
+# ─── npm packages ────────────────────────────────────────────
+echo "── Installing npm packages..."
+npm i -g @steipete/summarize       # summarize skill
+npm i -g clawhub                   # clawhub skill
+npm i -g mcporter                  # mcporter skill
+npm i -g @steipete/oracle          # oracle skill
+npm i -g @xdevplatform/xurl        # xurl skill
+
+# ─── Homebrew packages ───────────────────────────────────────
+echo "── Installing Homebrew packages..."
+brew tap steipete/tap 2>&1
+brew install 1password-cli 2>&1                   # 1password skill (bin: op)
+brew install gemini-cli 2>&1                      # gemini skill
+brew install gh 2>&1                              # github, gh-issues skills
+brew install himalaya 2>&1                        # himalaya skill
+brew install steipete/tap/gifgrep 2>&1            # gifgrep skill
+brew install steipete/tap/gogcli 2>&1             # gog skill
+brew install steipete/tap/goplaces 2>&1           # goplaces skill
+brew install steipete/tap/ordercli 2>&1           # ordercli skill
+brew install steipete/tap/sag 2>&1                # sag skill
+brew install steipete/tap/songsee 2>&1            # songsee skill
+brew install steipete/tap/spogo 2>&1              # spotify-player skill
+brew install yakitrak/yakitrak/obsidian-cli 2>&1  # obsidian skill
+brew install openhue/cli/openhue-cli 2>&1         # openhue skill
+brew install ffmpeg 2>&1                          # video-frames, songsee skills
+
+# ─── Go packages ─────────────────────────────────────────────
+echo "── Installing Go packages..."
+go install github.com/Hyaxia/blogwatcher/cmd/blogwatcher@latest   # blogwatcher skill
+go install github.com/steipete/blucli/cmd/blu@latest              # blucli skill
+go install github.com/steipete/eightctl/cmd/eightctl@latest       # eightctl skill
+go install github.com/steipete/sonoscli/cmd/sonos@latest          # sonoscli skill
+go install github.com/steipete/wacli/cmd/wacli@latest             # wacli skill
+
+# ─── uv/Python packages ──────────────────────────────────────
+echo "── Installing Python packages..."
+uv tool install nano-pdf                     # nano-pdf skill
+
+# ─── Cleanup caches ──────────────────────────────────────────
+echo "── Cleaning up caches..."
+npm cache clean --force 2>/dev/null || true
+rm -rf "$HOME/.npm/_cacache"
+brew cleanup --prune=all -s 2>/dev/null || true
+rm -rf "$(brew --cache)" 2>/dev/null || true
+go clean -cache -modcache -fuzzcache 2>/dev/null || true
+rm -rf "$HOME/.cache/uv" "$HOME/.cache/pip"
+rm -rf /tmp/* /var/tmp/* 2>/dev/null || true
+
+echo ""
+echo "All skill dependencies installed successfully!"
+echo ""
+echo "Skills NOT installed (macOS-only):"
+echo "  apple-notes, apple-reminders, bear-notes, camsnap, imsg,"
+echo "  model-usage, peekaboo, things-mac"
+echo ""
+echo "Skills NOT installed (very large / manual setup):"
+echo "  openai-whisper (pulls full Python + ML models)"
+echo "  sherpa-onnx-tts (requires manual runtime/model download)"
+echo ""
+echo "Skills needing only config/API keys (no binary):"
+echo "  bluebubbles, canvas, coding-agent, discord, healthcheck,"
+echo "  nano-banana-pro, notion, openai-image-gen, openai-whisper-api,"
+echo "  skill-creator, slack, voice-call, weather"

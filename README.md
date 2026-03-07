@@ -1,7 +1,7 @@
 # OpenClaw Docker (Full-Featured)
 
-Openclaw Docker Image with pre-configured environment, development tools, and
-built-in skill dependencies.
+Custom OpenClaw Docker image with pre-installed package managers and a
+one-command skill installer.
 
 ## Image
 
@@ -11,38 +11,33 @@ ghcr.io/hudint/openclaw_docker_full_featured:latest
 
 ## Build
 
-### Local
-
 ```bash
 docker build -t openclaw:custom .
 ```
 
-## Additional Configuration
+## What's included
 
-The image automatically runs two setup scripts:
+### Pre-installed (in the image)
 
-### Root-Setup (`scripts/root.sh`)
+- **System packages** (apt): curl, git, build-essential, procps, file, tmux, jq,
+  ripgrep
+- **Go** 1.23.6 toolchain (`/usr/local/go`)
+- **Homebrew** (`/home/linuxbrew/.linuxbrew`)
+- **uv** Python package manager (`~/.local/bin`)
+- **npm, pnpm, Bun** (from base image)
 
-- **System Packages**: curl, git, build-essential, procps, file, tmux
-- **Skill APT Packages**: jq (session-logs, trello), ripgrep (session-logs)
-- **npm/pnpm Permissions**: Directories configured for node user
-- **npm/pnpm Paths**: `~/.npm-global` and `~/.local/share/pnpm` added to PATH
-- **Homebrew**: Prepared under `/home/linuxbrew/.linuxbrew`
-- **Go**: Version 1.23.6 installed under `/usr/local/go`
-- **uv**: Python Package Manager prepared
-- **Bashrc**: All paths automatically added to `~/.bashrc`
+### install-skills (run once)
 
-### Node-Setup (`scripts/node.sh`)
+The `install-skills` command installs all skill dependencies into `/home/node/`.
+When using a volume mount on `/home/node`, you only need to run it once —
+everything persists.
 
-- **npm packages**: @steipete/summarize, clawhub, mcporter, @steipete/oracle,
-  @xdevplatform/xurl
-- **Homebrew**: Fully installed as node user
-- **Brew packages**: 1password-cli, ffmpeg, gemini-cli, gh, himalaya, gifgrep,
-  gogcli, goplaces, ordercli, sag, songsee, spogo, obsidian-cli, openhue-cli
-- **Go workspace**: Prepared under `~/go`
-- **Go packages**: blogwatcher, blu (blucli), eightctl, sonos (sonoscli), wacli
-- **uv**: Python UV installer executed
-- **uv packages**: nano-pdf
+| Category | Packages                                                                                                                             |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| npm      | @steipete/summarize, clawhub, mcporter, @steipete/oracle, @xdevplatform/xurl                                                         |
+| Homebrew | 1password-cli, gemini-cli, gh, himalaya, gifgrep, gogcli, goplaces, ordercli, sag, songsee, spogo, obsidian-cli, openhue-cli, ffmpeg |
+| Go       | blogwatcher, blu (blucli), eightctl, sonos (sonoscli), wacli                                                                         |
+| uv       | nano-pdf                                                                                                                             |
 
 ## Skill Dependency Overview
 
@@ -92,46 +87,27 @@ large ML package), sherpa-onnx-tts (requires manual runtime/model download)
 
 ## Included Tools
 
-- npm, pnpm (Node Package Manager)
+- npm, pnpm, Bun (from base image)
 - Homebrew (Linux)
 - Go 1.23.6
-- uv (Python Package Manager)
-- Git, curl, build-essential and other development tools
-
-## Usage
-
-```bash
-docker run -it openclaw:custom bash
-```
-
-All tools are immediately available and environment variables are
-pre-configured.
+- uv (Python package manager)
+- Git, curl, build-essential, tmux, jq, ripgrep
 
 ## Volume Persistence
 
-Tool configurations and auth tokens are lost when the container is removed.
+Mount two volumes so all installed tools and configs persist across container
+restarts:
 
-**Recommended:** Mount the entire `node` home directory as a single volume.
-This covers all tool configs at once and simplifies the setup.
-
-Build-time tool binaries (Go, npm, Homebrew, uv) are installed to `/opt/tools`
-and `/home/linuxbrew`, so they are **not affected** by the volume mount and will
-always reflect the current image version. Tools you install yourself at runtime
-go to `/home/node` and persist via the volume.
-
-```bash
-docker run -v openclaw-home:/home/node ghcr.io/hudint/openclaw_docker_full_featured:latest
-```
-
-Or in `docker-compose.yml`:
+- `/home/node` — npm, Go, uv packages + all tool configs
+- `/home/linuxbrew` — Homebrew and all brew-installed packages
 
 ```yaml
 volumes:
-  - openclaw-home:/home/node
+    - openclaw-home:/home/node
+    - openclaw-brew:/home/linuxbrew
 ```
 
-Below is a reference of the individual config paths if you prefer fine-grained
-mounts:
+Config paths reference:
 
 | Path                       | Tool                   | Content                                           |
 | -------------------------- | ---------------------- | ------------------------------------------------- |
@@ -151,6 +127,7 @@ mounts:
 ## License
 
 This image is based on [OpenClaw](https://github.com/openclaw/openclaw), which
-is licensed under the [MIT License](https://github.com/openclaw/openclaw/blob/main/LICENSE).
-The additional scripts and configuration in this repository are also provided
-under the MIT License.
+is licensed under the
+[MIT License](https://github.com/openclaw/openclaw/blob/main/LICENSE). The
+additional scripts and configuration in this repository are also provided under
+the MIT License.

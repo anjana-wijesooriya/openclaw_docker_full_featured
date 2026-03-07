@@ -8,10 +8,13 @@ USER node
 COPY --chown=node:node ./scripts/node.sh /tmp/node.sh
 RUN bash /tmp/node.sh
 
-# Make all installed tools available to every process
-# Build-time tools are in /opt/tools and /usr/local (not hidden by /home/node volume mount)
-# Runtime ENVs point to /home/node so new installs persist in the volume
+# Install script for skill dependencies (run once after first start)
+COPY --chown=node:node ./scripts/install-skills /usr/local/bin/install-skills
+RUN chmod +x /usr/local/bin/install-skills
+
+# Make package managers available to every process
+# All skill installs go to /home/node (persisted via volume mount)
 ENV GOPATH="/home/node/go"
 ENV NPM_CONFIG_PREFIX="/home/node/.npm-global"
-ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:/opt/tools/go/bin:/usr/local/go/bin:/opt/tools/uv/bin:/home/node/go/bin:/home/node/.local/bin:/home/node/.npm-global/bin:${PATH}"
+ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:/usr/local/go/bin:/home/node/go/bin:/home/node/.local/bin:/home/node/.npm-global/bin:${PATH}"
 
